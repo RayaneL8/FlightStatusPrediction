@@ -1,0 +1,36 @@
+flight-delay-app/
+│
+├── app/                        # Dossier principal de l'application
+│   ├── __init__.py             # Initialisation du package
+│   ├── main.py                 # Fichier principal de FastAPI
+│   ├── api/                    # Dossier pour les routes API
+│   │   ├── __init__.py
+│   │   ├── flight_routes.py    # Routes liées aux informations sur les vols (retards, performances, etc.)
+│   │   └── user_routes.py      # Routes pour gérer les utilisateurs (si nécessaire)
+│   │
+│   ├── models/                 # Modèles pour gérer les données
+│   │   ├── __init__.py
+│   │   └── flight_model.py     # Modèle représentant les données de vol
+│   │
+│   ├── services/               # Logique métier de l'application (analyses, traitements)
+│   │   ├── __init__.py
+│   │   ├── data_service.py     # Fonctionnalités pour lire les fichiers Parquet et effectuer des analyses
+│   │   └── prediction_service.py # Si vous avez des fonctions ML ou des prédictions
+│   │
+│   ├── utils/                  # Utilitaires (fonctionnalités réutilisables)
+│   │   ├── __init__.py
+│   │   └── data_utils.py       # Fonctions auxiliaires pour gérer les données (par exemple, traitement des Parquet)
+│   │
+│   └── config/                 # Configuration de l'application
+│       ├── __init__.py
+│       └── settings.py         # Configuration des variables d'environnement (par exemple, base de données, fichiers)
+│
+├── data/                       # Dossier pour les fichiers de données (par exemple, fichiers Parquet)
+│   └── flight_data.parquet     # Exemple de fichier Parquet avec les données de vols
+│
+├── logs/                       # Dossier pour les logs de l'application
+│   └── app.log                 # Fichier de log pour suivre les erreurs et événements
+│
+├── requirements.txt            # Liste des dépendances Python du projet
+├── Dockerfile                  # Si vous voulez containeriser l'application
+└── README.md                   # Documentation du projet
