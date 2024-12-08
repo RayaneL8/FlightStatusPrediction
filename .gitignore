@@ -1,0 +1,5 @@
+# Ignore les dossiers pycache
+__pycache__/
+*.py[cod]
+
+backend/data/*.parquet
