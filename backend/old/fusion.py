@@ -1,5 +1,5 @@
 import duckdb
 
 duckdb.execute("""
-COPY (SELECT * FROM './../data/*.parquet') TO './../data/db.parquet' (FORMAT 'parquet');
+COPY (SELECT * FROM './backend/data/*.parquet') TO './backend/data/db.parquet' (FORMAT 'parquet');
 """)
