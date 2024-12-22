@@ -72,7 +72,6 @@ def sql_query(query: str):
 
 
 
-
 @app.get("/cancelled-flights-percentage-year/{year}")
 def cancelled_flights_percentage_year(year: int):
     return queries.cancelled_flights_percentage_year(year)

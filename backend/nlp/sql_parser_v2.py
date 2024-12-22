@@ -49,9 +49,17 @@ class SQLParser:
             "count number of": "COUNT",
             "count": "COUNT",
             "number of": "COUNT",
+            "a maximum of": "MAX",
+            "maximum of": "MAX",
+            "a maximum": "MAX",
             "maximum": "MAX",
+            "max": "MAX",
             "highest": "MAX",
+            "a minimum of": "MIN",
+            "minimum of": "MIN",
+            "a minimum": "MIN",
             "minimum": "MIN",
+            "min": "MIN",
             "lowest": "MIN"
         }
 
@@ -296,41 +304,6 @@ class SQLParser:
         return conditions
 
 
-    # def parse_where_conditions(self, text: str) -> List[str]:
-    #     """Optimized WHERE condition parsing, including clauses with 'with'."""
-    #     conditions = []
-        
-    #    #print("texte:",text)
-    #     # Split conditions on 'with'
-    #     parts = text.lower().split("with")
-    #    #print('parts',parts)
-    #     # Parse main condition (before 'with')
-    #     main_condition = parts[0].strip()
-    #     if temporal_condition := self.parse_temporal_condition(main_condition):
-    #         conditions.append(temporal_condition)
-    #     if comparison_condition := self.parse_comparison_condition(main_condition):
-    #         conditions.append(comparison_condition)
-    #     conditions.extend(self.parse_exact_matches(main_condition))
-        
-    #     # Parse additional conditions introduced by 'with'
-    #     if len(parts) > 1:
-    #         for additional_condition in parts[0:]:
-    #             additional_condition = additional_condition.strip()
-    #             if comparison_condition := self.parse_comparison_condition(additional_condition):
-    #                 conditions.append(comparison_condition)
-    #                #print('comp_cond', comparison_condition)
-    #             if temporal_condition := self.parse_temporal_condition(additional_condition):
-    #                 conditions.append(temporal_condition)
-    #                #print('temp_cond', temporal_condition)
-    #             conditions.extend(self.parse_exact_matches(additional_condition))
-                
-    #     if "diverted" in text:
-    #             conditions.append("Diverted = true")
-                
-    #     if "cancelled" in text:
-    #             conditions.append("Cancelled = true")
-        
-    #     return conditions
 
 
     def parse_where_conditions(self, text: str) -> List[str]:
@@ -371,35 +344,6 @@ class SQLParser:
         return conditions
 
 
-
-    # def parse_where_conditions(self, text: str) -> List[str]:
-    #     """Optimized WHERE condition parsing"""
-    #     conditions = []
-        
-    #     #print("parse_where_conditions", text)
-        
-    #     # Parse temporal conditions
-    #     if temporal_condition := self.parse_temporal_condition(text):
-    #         conditions.append(temporal_condition)
-    #         #print('temp_cond',temporal_condition)
-        
-    #     # Parse comparison conditions
-    #     if comparison_condition := self.parse_comparison_condition(text):
-    #         conditions.append(comparison_condition)
-    #        #print('comp_cond', comparison_condition)
-            
-    #     if "diverted" in text:
-    #         conditions.append("Diverted = true")
-            
-    #     if "cancelled" in text:
-    #         conditions.append("Cancelled = true")
-
-        
-    #     # Parse exact match conditions
-    #     conditions.extend(self.parse_exact_matches(text))
-    #     #print(conditions)
-        
-    #     return conditions
 
     def parse_multiple_conditions(self, text: str) -> List[str]:
         """Optimized multiple condition parsing"""

@@ -36,7 +36,7 @@ df.createOrReplaceTempView("flights")
 # Liste des compagnies aériennes présentes dans les données
 def list_airlines():
     query = "SELECT DISTINCT Airline FROM flights"
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -47,7 +47,7 @@ def cancelled_flights_percentage_year(year: int):
         FROM flights 
         WHERE Year = {year} AND Cancelled = 1
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -58,7 +58,7 @@ def cancelled_flights_percentage_since(date: str):
         FROM flights 
         WHERE FlightDate >= '{date}' AND Cancelled = 1
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -69,7 +69,7 @@ def delayed_flights_percentage_year(year: int):
         FROM flights 
         WHERE Year = {year} AND DepDelay > 0
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -80,7 +80,7 @@ def delayed_flights_percentage_since(date: str):
         FROM flights 
         WHERE FlightDate >= '{date}' AND DepDelay > 0
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -93,7 +93,7 @@ def most_used_airlines():
         ORDER BY TotalFlights DESC
         LIMIT 10
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -108,7 +108,7 @@ def best_performing_airlines():
         ORDER BY CancelledRate ASC, AvgDelay ASC
         LIMIT 10
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -124,7 +124,7 @@ def ranking_states(state: str):
         GROUP BY OriginState
         ORDER BY CancelledFlights ASC, AvgDelay ASC
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -135,7 +135,7 @@ def diverted_flights_percentage_year(year: int):
         FROM flights 
         WHERE Year = {year} AND Diverted = 1
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -146,7 +146,7 @@ def diverted_flights_percentage_since(date: str):
         FROM flights 
         WHERE FlightDate >= '{date}' AND Diverted = 1
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -334,7 +334,7 @@ def avg_departure_delay(year=None, city=None, airline=None):
         GROUP BY Year, OriginCityName, Airline
         ORDER BY Year, Avg_Departure_Delay DESC
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -355,7 +355,7 @@ def avg_arrival_delay(year=None, city=None, airline=None):
         GROUP BY Year, DestCityName, Airline
         ORDER BY Year, Avg_Arrival_Delay DESC
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -378,7 +378,7 @@ def cancelled_percentage(year=None, city=None, airline=None):
         GROUP BY Year, OriginCityName, Airline
         ORDER BY Cancelled_Percentage DESC
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -401,7 +401,7 @@ def diverted_percentage(year=None, city=None, airline=None):
         GROUP BY Year, OriginCityName, Airline
         ORDER BY Diverted_Percentage DESC
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -414,7 +414,7 @@ def us_map_delay_cancellations():
         FROM flights
         GROUP BY OriginStateName, OriginCityName
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -435,7 +435,7 @@ def total_flights(year=None, city=None, airline=None):
         GROUP BY Year, OriginCityName, Airline
         ORDER BY Total_Flights DESC
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -457,7 +457,7 @@ def avg_distance(year=None, city=None, airline=None):
     GROUP BY Year, OriginCityName, Airline
     ORDER BY Avg_Distance DESC;
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -468,7 +468,7 @@ def flight_distribution_by_airline():
     GROUP BY Airline
     ORDER BY Total_Flights DESC;
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -491,7 +491,7 @@ def avg_flight_time(year=None, city=None, airline=None):
     GROUP BY Year, OriginCityName, Airline
     ORDER BY Avg_Flight_Time DESC;
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -502,7 +502,7 @@ def cancelled_calendar():
     WHERE Cancelled = 1
     ORDER BY FlightDate ASC;
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -523,7 +523,7 @@ def avg_taxi_out(year=None, city=None, airline=None):
     GROUP BY Year, OriginCityName, Airline
     ORDER BY Avg_TaxiOut_Time DESC;
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -543,7 +543,7 @@ def avg_taxi_in(year=None, city=None, airline=None):
     GROUP BY Year, DestCityName, Airline
     ORDER BY Avg_TaxiIn_Time DESC;
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -564,7 +564,7 @@ def flights_delayed_15_plus(year=None, city=None, airline=None):
     GROUP BY Year, OriginCityName, Airline
     ORDER BY Flights_Delayed_15_Plus DESC;
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -585,7 +585,7 @@ def flights_delayed_less_15(year=None, city=None, airline=None):
     GROUP BY Year, OriginCityName, Airline
     ORDER BY Flights_Delayed_Less_15 DESC;
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -606,7 +606,7 @@ def diverted_flights(year=None, city=None, airline=None):
     GROUP BY Year, OriginCityName, Airline
     ORDER BY Diverted_Flights DESC;
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
@@ -627,11 +627,11 @@ def cancelled_flights(year=None, city=None, airline=None):
     GROUP BY Year, OriginCityName, Airline
     ORDER BY Cancelled_Flights DESC;
     """
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
 
 def execute_raw_query(query):
-    return query
+   
    #  return spark.sql(query).toPandas().to_dict(orient="records")
 
