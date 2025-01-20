@@ -19,6 +19,10 @@ def check_result(data):
 def list_airlines():
     return check_result(queries.list_airlines())
 
+@app.get("/list-cities")
+def list_cities():
+    return check_result(queries.list_cities())
+
 @app.get("/performance")
 def performance_queries(
     year: Optional[int] = Query(None), 

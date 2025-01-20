@@ -731,3 +731,14 @@ def execute_raw_query(query):
         return spark.sql(query).toPandas().to_dict(orient="records")
     except Exception as e:
         return {"error": str(e)}
+    
+    
+    
+    
+    def list_cities():
+        try:
+            query = "SELECT DISTINCT OriginCityName FROM flights"
+            return spark.sql(query).toPandas().to_dict(orient="records")
+        except Exception as e:
+            return {"error": str(e)}
+    
