@@ -285,7 +285,7 @@ def cancelled_flights_calendar(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         
         query = f"""
@@ -319,7 +319,7 @@ def diverted_flights_calendar(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         
         query = f"""
@@ -353,7 +353,7 @@ def delay_calendar(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         
         query = f"""
@@ -388,7 +388,7 @@ def avg_departure_delay(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions)
         query = f"""
             SELECT Year, OriginCityName, Airline, AVG(DepDelayMinutes) AS Avg_Departure_Delay
@@ -407,11 +407,17 @@ def avg_arrival_delay(year=None, city=None, airline=None):
     try:
         conditions = ["Cancelled = 0", "Diverted = 0"]
         if year:
-            conditions.append(f"Year = {year}")
+            year_conditions = [f"Year = {y}" for y in year]
+            conditions.append(f"({' OR '.join(year_conditions)})")
+        
         if city:
-            conditions.append(f"DestCityName = '{city}'")
+            city_conditions = [f"DestCityName = '{c}'" for c in city]
+            conditions.append(f"({' OR '.join(city_conditions)})")
+        
         if airline:
-            conditions.append(f"Airline = '{airline}'")
+            airline_conditions = [f"Airline = '{a}'" for a in airline]
+            conditions.append(f"({' OR '.join(airline_conditions)})")
+            
         where_clause = " AND ".join(conditions)
         query = f"""
             SELECT Year, DestCityName, Airline, AVG(ArrDelayMinutes) AS Avg_Arrival_Delay
@@ -446,7 +452,7 @@ def cancelled_percentage(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         query = f"""
             SELECT Year, OriginCityName, Airline,
@@ -477,7 +483,7 @@ def diverted_percentage(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         query = f"""
             SELECT Year, OriginCityName, Airline,
@@ -523,7 +529,7 @@ def total_flights(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         query = f"""
             SELECT Year, OriginCityName, Airline, COUNT(*) AS Total_Flights
@@ -553,7 +559,7 @@ def avg_distance(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         query= f"""
         SELECT Year, OriginCityName, Airline, AVG(Distance) AS Avg_Distance
@@ -597,7 +603,7 @@ def avg_flight_time(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         query= f"""
         SELECT Year, OriginCityName, Airline, AVG(ActualElapsedTime) AS Avg_Flight_Time
@@ -646,7 +652,7 @@ def avg_taxi_out(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         query= f"""
         SELECT Year, OriginCityName, Airline, AVG(TaxiOut) AS Avg_TaxiOut_Time
@@ -680,7 +686,7 @@ def avg_taxi_in(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         query= f"""
         SELECT Year, DestCityName, Airline, AVG(TaxiIn) AS Avg_TaxiIn_Time
@@ -714,7 +720,7 @@ def flights_delayed_15_plus(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         query= f"""
         SELECT Year, OriginCityName, Airline, COUNT(*) AS Flights_Delayed_15_Plus
@@ -743,7 +749,7 @@ def flights_delayed_less_15(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         query= f"""
         SELECT Year, OriginCityName, Airline, COUNT(*) AS Flights_Delayed_Less_15
@@ -772,7 +778,7 @@ def diverted_flights(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         query= f"""
         SELECT Year, OriginCityName, Airline, COUNT(*) AS Diverted_Flights
@@ -801,7 +807,7 @@ def cancelled_flights(year=None, city=None, airline=None):
         if airline:
             airline_conditions = [f"Airline = '{a}'" for a in airline]
             conditions.append(f"({' OR '.join(airline_conditions)})")
-            
+
         where_clause = " AND ".join(conditions) if conditions else "1=1"
         query= f"""
         SELECT Year, OriginCityName, Airline, COUNT(*) AS Cancelled_Flights
