@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Query
-from typing import Optional
+from typing import List,Optional
 import spark.queries as queries
 import nlp.sql_parser_v2 as parser
 
@@ -23,11 +23,12 @@ def list_airlines():
 def list_cities():
     return check_result(queries.list_cities())
 
+
 @app.get("/performance")
 def performance_queries(
-    year: Optional[int] = Query(None), 
-    city: Optional[str] = Query(None), 
-    airline: Optional[str] = Query(None)
+    year: Optional[List[int]] = Query(None), 
+    city: Optional[List[str]] = Query(None), 
+    airline: Optional[List[str]] = Query(None)
 ):
     return {
         "avg_departure_delay": check_result(queries.avg_departure_delay(year=year, city=city, airline=airline)),
@@ -39,9 +40,9 @@ def performance_queries(
 
 @app.get("/statistics")
 def statistical_queries(
-    year: Optional[int] = Query(None), 
-    city: Optional[str] = Query(None), 
-    airline: Optional[str] = Query(None)
+    year: Optional[List[int]] = Query(None), 
+    city: Optional[List[str]] = Query(None), 
+    airline: Optional[List[str]] = Query(None)
 ):
     return {
         "total_flights": check_result(queries.total_flights(year=year, city=city, airline=airline)),
@@ -55,9 +56,9 @@ def statistical_queries(
 
 @app.get("/quality")
 def quality_queries(
-    year: Optional[int] = Query(None), 
-    city: Optional[str] = Query(None), 
-    airline: Optional[str] = Query(None)
+    year: Optional[List[int]] = Query(None), 
+    city: Optional[List[str]] = Query(None), 
+    airline: Optional[List[str]] = Query(None)
 ):
     return {
         "avg_taxi_out": check_result(queries.avg_taxi_out(year=year, city=city, airline=airline)),
@@ -67,6 +68,7 @@ def quality_queries(
         "cancelled_flights": check_result(queries.cancelled_flights(year=year, city=city, airline=airline)),
         "diverted_flights": check_result(queries.diverted_flights(year=year, city=city, airline=airline))
     }
+
 
 @app.get("/nlp/{query}")
 def sql_query(query: str):
