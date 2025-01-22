@@ -1,0 +1,4 @@
+backend/pycache/
+.py[cod]
+
+backend/data/.parquet
