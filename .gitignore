@@ -1,4 +1,9 @@
-backend/pycache/
-.py[cod]
+# Ignorer tous les répertoires __pycache__ et leurs contenus
+**/__pycache__/
+**/*.py[cod]
 
-backend/data/.parquet
+# Ignorer les fichiers Parquet
+**/*.parquet
+
+# Ignorer les environnements virtuels
+**/venv/
