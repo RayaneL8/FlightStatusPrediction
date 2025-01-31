@@ -31,35 +31,76 @@ def extract_performance_metrics(data):
 
 
 def get_performance(years: list[int], cities: list[str], airlines: list[str]):
-    aggregated_metrics = {airline: {"Avg_Departure_Delay": 0, "Avg_Arrival_Delay": 0, "Cancelled_Percentage": 0, "Diverted_Percentage": 0, "count": 0} for airline in airlines}
-    
-    data = Spreset_requests.get_performance_multi(years=years, cities=cities, airlines=airlines)
-                
-    try:
-        for d in data:
-            print(data)
-            if d:
-                metrics = extract_performance_metrics(data=d)
-                aggregated_metrics[airline]["Avg_Departure_Delay"] += metrics["Avg_Departure_Delay"]
-                aggregated_metrics[airline]["Avg_Arrival_Delay"] += metrics["Avg_Arrival_Delay"]
-                aggregated_metrics[airline]["Cancelled_Percentage"] += metrics["Cancelled_Percentage"]
-                aggregated_metrics[airline]["Diverted_Percentage"] += metrics["Diverted_Percentage"]
-                aggregated_metrics[airline]["count"] += 1
-                
-    except Exception as e:
-        print(f"Error fetching data: {e}")
-        return []
+    """
+    Récupère et organise les données de performances par années, villes et compagnies aériennes.
+    """
+    # Récupération brute des données via l'API
+    raw_data = Spreset_requests.get_performance_multi(years=years, cities=cities, airlines=airlines)
+    if not raw_data:
+        print("Aucune donnée récupérée.")
+        return {}
 
-    # Calculer les moyennes
-    for airline in aggregated_metrics:
-        count = aggregated_metrics[airline]["count"]
-        if count > 0:
-            aggregated_metrics[airline]["Avg_Departure_Delay"] /= count
-            aggregated_metrics[airline]["Avg_Arrival_Delay"] /= count
-            aggregated_metrics[airline]["Cancelled_Percentage"] /= count
-            aggregated_metrics[airline]["Diverted_Percentage"] /= count
+    # Organisation des données
+    organized_metrics = transform_to_dataframe(raw_data)
+    return organized_metrics
 
-    return aggregated_metrics
+def transform_to_dataframe(data):
+    """
+    Transforme les données brutes de l'API en un DataFrame structuré pour Plotly, avec normalisation des valeurs.
+    """
+    # Vérifier si les données brutes sont valides
+    if data is None or not isinstance(data, dict) or len(data) == 0:
+        print("Aucune donnée reçue ou données invalides.")
+        return pd.DataFrame()
+
+    # Initialisation de la liste pour stocker les données formatées
+    all_data = []
+    categories = ["avg_departure_delay", "avg_arrival_delay", "cancelled_percentage", "diverted_percentage"]
+
+    for category in categories:
+        if category in data:  # Vérifier que la clé existe dans les données
+            for entry in data[category]:
+                airline = entry.get("Airline", "Unknown")
+                year = entry.get("Year", "Unknown")
+
+                # Récupérer la valeur pour la catégorie actuelle
+                value = entry.get(category.replace("_", " ").title().replace(" ", "_"), 0)
+
+                # Ajouter une ligne pour chaque métrique
+                all_data.append({
+                    "Airline": airline,
+                    "Year": year,
+                    "Parameter": category.replace("_", " ").title().replace(" ", "_"),
+                    "Value": value,
+                })
+
+    # Vérifier si aucune donnée n'a été collectée
+    if not all_data:
+        print("Erreur : aucune donnée formatée pour le DataFrame.")
+        return pd.DataFrame()
+
+    # Création du DataFrame
+    df = pd.DataFrame(all_data)
+
+    # Vérifier explicitement si le DataFrame est vide
+    if df.empty:
+        print("Erreur : le DataFrame final est vide.")
+        return pd.DataFrame()
+
+    # Appliquer les transformations finales
+    df["Parameter"] = df["Parameter"].astype("category")
+
+    # Normaliser les valeurs sur une base de 100
+    max_value = df["Value"].max()
+    if max_value > 0:  # Éviter une division par zéro
+        df["Value"] = (df["Value"] / max_value) * 100
+
+    print("Aperçu des données transformées et normalisées :")
+    print(df.head())
+
+    return df
+
+
 
 #ANIMATED
 def fetch_performance_metrics(year, cities, airlines):
@@ -70,48 +111,3 @@ def fetch_performance_metrics(year, cities, airlines):
     return aggregated_metrics
 
 
-def transform_to_dataframe(start_year, end_year, cities, airlines):
-    """
-    Transforme les données récupérées en un DataFrame structuré pour Plotly.
-    """
-    all_data = []
-
-    for year in range(start_year, end_year + 1):
-        aggregated_metrics = fetch_performance_metrics(year, cities, airlines)
-        
-        for airline, metrics in aggregated_metrics.items():
-            all_data.append({
-                "Airline": airline,
-                "Year": year,
-                "Parameter": "Avg_Departure_Delay",
-                "Value": metrics["Avg_Departure_Delay"] or 0  # Valeur par défaut
-            })
-            all_data.append({
-                "Airline": airline,
-                "Year": year,
-                "Parameter": "Avg_Arrival_Delay",
-                "Value": metrics["Avg_Arrival_Delay"] or 0
-            })
-            all_data.append({
-                "Airline": airline,
-                "Year": year,
-                "Parameter": "Cancelled_Percentage",
-                "Value": metrics["Cancelled_Percentage"] or 0  # Ne pas multiplier par 100
-            })
-            all_data.append({
-                "Airline": airline,
-                "Year": year,
-                "Parameter": "Diverted_Percentage",
-                "Value": metrics["Diverted_Percentage"] or 0  # Ne pas multiplier par 100
-            })
-
-    # Conversion en DataFrame
-    df = pd.DataFrame(all_data)
-    df["Parameter"] = df["Parameter"].astype("category")  # Assurez-vous que Parameter est une catégorie
-
-    # Vérification et correction des valeurs aberrantes
-    df["Value"] = df["Value"].clip(upper=100)  # Limiter les valeurs à 100%
-    print("Données après correction des anomalies :")
-    print(df.head())
-
-    return df

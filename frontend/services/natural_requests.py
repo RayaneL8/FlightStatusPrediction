@@ -3,13 +3,13 @@ import requests, urllib.parse
 from settings import settings
 
 def send_request(content: str):
-    print("Send Req")
-    print("Print API URL : ", settings.API_URL)
-    print("CONTENT: ", content)
+    # print("Send Req")
+    # print("Print API URL : ", settings.API_URL)
+    # print("CONTENT: ", content)
     try:
         # Effectuer une requête GET
         url = f"{settings.API_URL}nlp/{urllib.parse.quote(content)}"
-        print("FULL URL: ", url)
+        # print("FULL URL: ", url)
         response = requests.get(url)
         
         # Vérifier si la requête a réussi (code 200)

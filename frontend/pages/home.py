@@ -234,7 +234,7 @@ def generate_accordion_item_history(req: ReqHistoried):
     def trim_string(s: str, length: int = 10, suffix: str = "...") -> str:
         return s[:length] + suffix if len(s) > length else s
     
-    print("In generate_accordion_item_history()", req)
+    # print("In generate_accordion_item_history()", req)
     accordion_item_style ={
         "whiteSpace": "normal",  # Permet le retour à la ligne
         "wordBreak": "break-word",  # Coupe les mots trop longs
@@ -304,6 +304,7 @@ def generate_dashboards(n_clicks, cities, airlines, year):
     date_str = year
     year = int(datetime.strptime(date_str, "%Y-%m-%d").year)
     all_metrics = Cpreset_requests.get_performance(cities=cities, airlines=airlines, years=[2018,2019,2020,2021,2022])
+    print("all_metrics: ", all_metrics)
     return performance_dashboards.generate_dashboards(all_metrics=all_metrics, cities=cities, airlines=airlines)
 
 @app.callback(
@@ -344,11 +345,11 @@ def submit_request(n_clicks: int, value: str, data: list):
         print("CLICK")
         # Appeler la fonction asynchrone pour traiter la soumission
         new_item = Cnat_reqs.handle_submit(content=value)
-        print("Nouvel élément ajouté :", new_item)
+        # print("Nouvel élément ajouté :", new_item)
 
         # Récupérer la liste mise à jour
         updated_list = Cnat_reqs.get_list()  # Doit retourner une liste JSON-sérialisable
-        print("Liste mise à jour :", updated_list)
+        # print("Liste mise à jour :", updated_list)
 
         # Retourner la liste mise à jour
         return updated_list
@@ -367,6 +368,6 @@ def fill_accordion_history(data: list, children: list):
     if len(data) < 1: 
         return []
     new_req = data[len(data)-1]
-    print("In fill_accordion_history()", new_req)
+    # print("In fill_accordion_history()", new_req)
     children.insert(0, generate_accordion_item_history(new_req))
     return children
