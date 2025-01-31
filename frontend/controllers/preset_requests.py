@@ -46,7 +46,7 @@ def get_performance(years: list[int], cities: list[str], airlines: list[str]):
 
 def transform_to_dataframe(data):
     """
-    Transforme les données brutes de l'API en un DataFrame structuré pour Plotly, avec normalisation des valeurs.
+    Transforme les données brutes de l'API en un DataFrame structuré pour Plotly.
     """
     # Vérifier si les données brutes sont valides
     if data is None or not isinstance(data, dict) or len(data) == 0:
@@ -87,13 +87,8 @@ def transform_to_dataframe(data):
         print("Erreur : le DataFrame final est vide.")
         return pd.DataFrame()
 
-    # Appliquer les transformations finales
-    df["Parameter"] = df["Parameter"].astype("category")
-
-    # Normaliser les valeurs sur une base de 100
-    max_value = df["Value"].max()
-    if max_value > 0:  # Éviter une division par zéro
-        df["Value"] = (df["Value"] / max_value) * 100
+    # Normalisation des valeurs par catégorie
+    df["Value"] = df.groupby("Parameter")["Value"].transform(lambda x: (x / x.max()) * 100)
 
     print("Aperçu des données transformées et normalisées :")
     print(df.head())
