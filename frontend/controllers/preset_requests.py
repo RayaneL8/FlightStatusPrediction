@@ -1,33 +1,36 @@
 import pandas as pd
 from services import preset_requests as Spreset_requests
 from itertools import product
+from geopy.geocoders import Nominatim
+import time
 
-def extract_performance_metrics(data):
-    avg_departure_delay = 0
-    avg_arrival_delay = 0
-    cancelled_percentage = 0
-    diverted_percentage = 0
 
-    # Gestion des valeurs reçues
-    if isinstance(data.get("avg_departure_delay"), list) and len(data["avg_departure_delay"]) > 0:
-        avg_departure_delay = data["avg_departure_delay"][0].get("Avg_Departure_Delay", 0)
+# def extract_performance_metrics(data):
+#     avg_departure_delay = 0
+#     avg_arrival_delay = 0
+#     cancelled_percentage = 0
+#     diverted_percentage = 0
 
-    if isinstance(data.get("avg_arrival_delay"), list) and len(data["avg_arrival_delay"]) > 0:
-        avg_arrival_delay = data["avg_arrival_delay"][0].get("Avg_Arrival_Delay", 0)
+#     # Gestion des valeurs reçues
+#     if isinstance(data.get("avg_departure_delay"), list) and len(data["avg_departure_delay"]) > 0:
+#         avg_departure_delay = data["avg_departure_delay"][0].get("Avg_Departure_Delay", 0)
 
-    if isinstance(data.get("cancelled_percentage"), list) and len(data["cancelled_percentage"]) > 0:
-        cancelled_percentage = data["cancelled_percentage"][0].get("Cancelled_Percentage", 0)
+#     if isinstance(data.get("avg_arrival_delay"), list) and len(data["avg_arrival_delay"]) > 0:
+#         avg_arrival_delay = data["avg_arrival_delay"][0].get("Avg_Arrival_Delay", 0)
 
-    if isinstance(data.get("diverted_percentage"), list) and len(data["diverted_percentage"]) > 0:
-        diverted_percentage = data["diverted_percentage"][0].get("Diverted_Percentage", 0)
+#     if isinstance(data.get("cancelled_percentage"), list) and len(data["cancelled_percentage"]) > 0:
+#         cancelled_percentage = data["cancelled_percentage"][0].get("Cancelled_Percentage", 0)
 
-    # Retour des métriques structurées
-    return {
-        "Avg_Departure_Delay": avg_departure_delay,
-        "Avg_Arrival_Delay": avg_arrival_delay,
-        "Cancelled_Percentage": cancelled_percentage,
-        "Diverted_Percentage": diverted_percentage,
-    }
+#     if isinstance(data.get("diverted_percentage"), list) and len(data["diverted_percentage"]) > 0:
+#         diverted_percentage = data["diverted_percentage"][0].get("Diverted_Percentage", 0)
+
+#     # Retour des métriques structurées
+#     return {
+#         "Avg_Departure_Delay": avg_departure_delay,
+#         "Avg_Arrival_Delay": avg_arrival_delay,
+#         "Cancelled_Percentage": cancelled_percentage,
+#         "Diverted_Percentage": diverted_percentage,
+#     }
 
 
 def get_performance(years: list[int], cities: list[str], airlines: list[str]):
@@ -42,7 +45,9 @@ def get_performance(years: list[int], cities: list[str], airlines: list[str]):
 
     # Organisation des données
     organized_metrics = transform_to_dataframe(raw_data)
-    return organized_metrics
+    us_map_metrics = transform_us_map_data(data=raw_data)
+    us_map_df = add_coordinates(us_map_df=us_map_metrics)
+    return organized_metrics, us_map_df
 
 def transform_to_dataframe(data):
     """
@@ -95,6 +100,67 @@ def transform_to_dataframe(data):
 
     return df
 
+def transform_us_map_data(data):
+    """
+    Transforme les données 'us-map' en un DataFrame structuré pour Plotly.
+    """
+    # Vérifier si les données contiennent 'us-map'
+    us_map_data = data.get("us-map", [])
+    if not us_map_data or not isinstance(us_map_data, list):
+        print("Aucune donnée 'us-map' valide trouvée.")
+        return pd.DataFrame()
+
+    # Créer une liste formatée pour chaque entrée
+    formatted_data = []
+    for entry in us_map_data:
+        formatted_data.append({
+            "State": entry.get("OriginStateName", "Unknown"),
+            "City": entry.get("OriginCityName", "Unknown").split("/")[0].split(",")[0],
+            "Avg_Departure_Delay": entry.get("Avg_Departure_Delay", 0),
+            "Total_Cancellations": entry.get("Total_Cancellations", 0)
+        })
+
+    # Convertir en DataFrame
+    df = pd.DataFrame(formatted_data)
+
+    # Vérifier si le DataFrame est vide
+    if df.empty:
+        print("Erreur : Le DataFrame 'us-map' est vide.")
+        return pd.DataFrame()
+
+    print("Aperçu des données 'us-map' transformées :")
+    print(df.head())
+
+    return df
+
+def add_coordinates(us_map_df):
+    """
+    Ajoute les coordonnées (latitude, longitude) aux données des villes.
+    """
+    geolocator = Nominatim(user_agent="us_map_locator")
+    latitudes = []
+    longitudes = []
+
+    for city in us_map_df["City"]:
+        print("Ville: ", city)
+        try:
+            location = geolocator.geocode(city + ", USA")
+            print(location)
+            if location:
+                latitudes.append(location.latitude)
+                longitudes.append(location.longitude)
+            else:
+                latitudes.append(None)
+                longitudes.append(None)
+        except Exception as e:
+            print(f"Erreur lors de la géolocalisation de {city}: {e}")
+            latitudes.append(None)
+            longitudes.append(None)
+        time.sleep(1)  # Pause pour éviter de dépasser les limites d'API
+
+    us_map_df["Latitude"] = latitudes
+    us_map_df["Longitude"] = longitudes
+    return us_map_df
 
 
 #ANIMATED

@@ -303,9 +303,9 @@ def open_modal(n1, is_open):
 def generate_dashboards(n_clicks, cities, airlines, year):
     date_str = year
     year = int(datetime.strptime(date_str, "%Y-%m-%d").year)
-    all_metrics = Cpreset_requests.get_performance(cities=cities, airlines=airlines, years=[2018,2019,2020,2021,2022])
+    all_metrics, us_map_metrics = Cpreset_requests.get_performance(cities=cities, airlines=airlines, years=[2018,2019,2020,2021,2022])
     print("all_metrics: ", all_metrics)
-    return performance_dashboards.generate_dashboards(all_metrics=all_metrics, cities=cities, airlines=airlines)
+    return performance_dashboards.generate_dashboards(all_metrics=all_metrics, us_map_metrics=us_map_metrics, cities=cities, airlines=airlines)
 
 @app.callback(
     Output("offcanvas-history", "is_open"),
