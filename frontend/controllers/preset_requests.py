@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from services import preset_requests as Spreset_requests
 from itertools import product
@@ -104,13 +105,11 @@ def transform_us_map_data(data):
     """
     Transforme les données 'us-map' en un DataFrame structuré pour Plotly.
     """
-    # Vérifier si les données contiennent 'us-map'
     us_map_data = data.get("us-map", [])
     if not us_map_data or not isinstance(us_map_data, list):
         print("Aucune donnée 'us-map' valide trouvée.")
         return pd.DataFrame()
 
-    # Créer une liste formatée pour chaque entrée
     formatted_data = []
     for entry in us_map_data:
         formatted_data.append({
@@ -120,26 +119,26 @@ def transform_us_map_data(data):
             "Total_Cancellations": entry.get("Total_Cancellations", 0)
         })
 
-    # Convertir en DataFrame
     df = pd.DataFrame(formatted_data)
-
-    # Vérifier si le DataFrame est vide
     if df.empty:
         print("Erreur : Le DataFrame 'us-map' est vide.")
         return pd.DataFrame()
 
     print("Aperçu des données 'us-map' transformées :")
     print(df.head())
-
     return df
 
 def add_coordinates(us_map_df):
     """
-    Ajoute les coordonnées (latitude, longitude) aux données des villes.
+    Ajoute les coordonnées (latitude, longitude) aux données des villes et stocke dans un CSV.
     """
+    CSV_FILE = "us_map_data.csv"
+    if os.path.exists(CSV_FILE):
+        print("Chargement des coordonnées depuis le CSV...")
+        return pd.read_csv(CSV_FILE)
+
     geolocator = Nominatim(user_agent="us_map_locator")
-    latitudes = []
-    longitudes = []
+    latitudes, longitudes = [], []
 
     for city in us_map_df["City"]:
         print("Ville: ", city)
@@ -160,8 +159,10 @@ def add_coordinates(us_map_df):
 
     us_map_df["Latitude"] = latitudes
     us_map_df["Longitude"] = longitudes
-    return us_map_df
 
+    us_map_df.to_csv(CSV_FILE, index=False)
+    print(f"Données enregistrées dans {CSV_FILE}")
+    return us_map_df
 
 #ANIMATED
 def fetch_performance_metrics(year, cities, airlines):

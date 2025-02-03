@@ -17,7 +17,8 @@ def generate_dashboards(all_metrics, us_map_metrics, cities, airlines):
                             all_metrics=all_metrics
                         ),
                     ),
-                ]
+                ],
+                style={"marginTop": "32px"}
             ),
             dbc.Row(
                 children=[
@@ -27,7 +28,8 @@ def generate_dashboards(all_metrics, us_map_metrics, cities, airlines):
                             all_metrics=all_metrics
                         )
                     ),
-                ]
+                ],
+                style={"marginTop": "32px"}
             ),
             dbc.Row(
                 children=[
@@ -37,9 +39,11 @@ def generate_dashboards(all_metrics, us_map_metrics, cities, airlines):
                             us_map_df=us_map_metrics
                         )
                     ),
-                ]
+                ],
+                style={"marginTop": "32px"}
             )
-        ]
+        ],
+        style={"marginTop": "64px"}
     )
 
 #RADAR
@@ -56,7 +60,7 @@ def generate_radar_dashboard(all_metrics):
         color="Airline",  # Couleur pour chaque compagnie
         line_close=True,  # Ferme les lignes du radar
         animation_frame="Year",  # Animation basée sur l'année
-        title="Radar Plot Animé des Métriques par Compagnie et Année",
+        title="Radar Plot displaying metrics of Companies per Years",
         template="plotly_dark"
     )
 
@@ -88,7 +92,7 @@ def create_animated_bar_chart(all_metrics):
         y="Value",  # Valeurs des métriques
         color="Airline",  # Couleurs par compagnie aérienne
         animation_frame="Year",  # Animation par année
-        title="Bar Chart Animé des Métriques par Compagnie et Année",
+        title="Bar Chart displaying metrics of Companies per Years",
         template="plotly_white"  # Style visuel clair
     )
 
@@ -113,48 +117,84 @@ def create_animated_bar_chart(all_metrics):
 
     return fig
 
+# def generate_us_heatmap(us_map_df):
+#     """
+#     Génère une carte heatmap des États-Unis pour visualiser les retards moyens au départ et les annulations.
+#     """
+#     if us_map_df.empty or "Latitude" not in us_map_df.columns or "Longitude" not in us_map_df.columns:
+#         print("Le DataFrame est vide ou manque de coordonnées géographiques.")
+#         return None
+
+#     # Création de la carte avec les coordonnées GPS
+#     fig = px.scatter_geo(
+#         us_map_df,
+#         lat="Latitude",
+#         lon="Longitude",
+#         hover_name="City",
+#         hover_data={
+#             "State": True,
+#             "Avg_Departure_Delay": ":.2f",
+#             "Total_Cancellations": True
+#         },
+#         size="Total_Cancellations",
+#         color="Avg_Departure_Delay",
+#         color_continuous_scale=px.colors.sequential.Viridis,
+#         title="Heatmap des Retards Moyens et Annulations par Ville"
+#     )
+
+#     # Ajustements esthétiques
+#     fig.update_layout(
+#         geo=dict(
+#             scope="usa",
+#             showland=True,
+#             landcolor="rgb(217, 217, 217)",
+#             subunitcolor="rgb(255, 255, 255)",
+#             countrycolor="rgb(255, 255, 255)"
+#         ),
+#         coloraxis_colorbar=dict(
+#             title="Retard Moyen",
+#             ticks="outside"
+#         )
+#     )
+
+#     return fig
+
 def generate_us_heatmap(us_map_df):
     """
-    Génère une carte heatmap des États-Unis pour visualiser les retards moyens au départ et les annulations.
+    Génère une carte interactive avec une combinaison des retards moyens et des annulations.
     """
-    if us_map_df.empty or "Latitude" not in us_map_df.columns or "Longitude" not in us_map_df.columns:
-        print("Le DataFrame est vide ou manque de coordonnées géographiques.")
+    if us_map_df.empty:
+        print("Erreur : Le DataFrame est vide. Impossible de générer la carte.")
         return None
 
-    # Création de la carte avec les coordonnées GPS
-    fig = px.scatter_geo(
+    # Combiner les deux valeurs en pondérant Total_Cancellations
+    us_map_df["Impact_Score"] = us_map_df["Avg_Departure_Delay"] + (us_map_df["Total_Cancellations"] / 1000)
+
+    fig = px.scatter_mapbox(
         us_map_df,
         lat="Latitude",
         lon="Longitude",
+        color="Impact_Score",
+        size="Impact_Score",
         hover_name="City",
-        hover_data={
-            "State": True,
-            "Avg_Departure_Delay": ":.2f",
-            "Total_Cancellations": True
-        },
-        size="Total_Cancellations",
-        color="Avg_Departure_Delay",
-        color_continuous_scale=px.colors.sequential.Viridis,
-        title="Heatmap des Retards Moyens et Annulations par Ville"
+        hover_data={"State": True, "Avg_Departure_Delay": True, "Total_Cancellations": True},
+        color_continuous_scale="Viridis",
+        size_max=15,
+        zoom=3,
+        title="Mapping of average delay duration and cancellations"
     )
 
-    # Ajustements esthétiques
     fig.update_layout(
-        geo=dict(
-            scope="usa",
-            showland=True,
-            landcolor="rgb(217, 217, 217)",
-            subunitcolor="rgb(255, 255, 255)",
-            countrycolor="rgb(255, 255, 255)"
-        ),
-        coloraxis_colorbar=dict(
-            title="Retard Moyen",
-            ticks="outside"
+        showlegend= True,
+        mapbox_style="carto-positron",
+        margin={"r": 0, "t": 50, "l": 0, "b": 0},
+        geo= dict(
+            scope='usa',
+            landcolor = 'rgb(217,217,217)'
         )
     )
 
     return fig
-
 
 
 
