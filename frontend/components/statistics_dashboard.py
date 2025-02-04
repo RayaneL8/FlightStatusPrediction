@@ -55,7 +55,7 @@ def generate_calendar_heatmaps(data):
                 y="Year",        # Années sur l'axe Y
                 z="Percentage",  # Pourcentage des retards/annulations/détournements
                 title=f"{category} Calendar Heatmap",
-                color_continuous_scale="Viridis"
+                color_continuous_scale="YlOrRd"
             )
 
             # Ajouter la figure dans le dictionnaire

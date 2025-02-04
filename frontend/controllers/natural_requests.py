@@ -32,7 +32,7 @@ def handle_submit(content: str):
 
     print("Handle submit")
     try:
-        data, elapsed = s_nat_req.send_request(content= content.lower().strip())
+        data, elapsed = s_nat_req.send_request(content= content.strip())
         # print("DATA and ELAPSED:", data, elapsed)
     except Exception:
         new_item = ReqPending(raw_text=content, sql_query=data["sql_query"], valid=False, result=None, elapsed_time={"server": data["elapsed_time"], "client": elapsed})
