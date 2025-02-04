@@ -11,23 +11,43 @@ def generate_dashboards(all_metrics, us_map_metrics, cities, airlines):
         [
             dbc.Row(
                 children=[
-                    dcc.Graph(
-                        id="radar-plot",
-                        figure=generate_radar_dashboard(
-                            all_metrics=all_metrics
+                    dbc.Col([
+                        dcc.Graph(
+                            id="animated-numeric-radar-plot",
+                            figure=create_radar_plots_numeric(
+                                all_metrics=all_metrics
+                            )
                         ),
-                    ),
+                    ], width=6),
+                    dbc.Col([
+                        dcc.Graph(
+                            id="animated-percentage-radar-plot",
+                            figure=create_radar_plots_percentage(
+                                all_metrics=all_metrics
+                            )
+                        ),
+                    ], width=6)
                 ],
                 style={"marginTop": "32px"}
             ),
             dbc.Row(
                 children=[
-                    dcc.Graph(
-                        id="animated-barchart-plot",
-                        figure=create_animated_bar_chart(
-                            all_metrics=all_metrics
-                        )
-                    ),
+                    dbc.Col([
+                        dcc.Graph(
+                            id="animated-numeric-barchart-plot",
+                            figure=create_animated_bar_chart_numeric(
+                                all_metrics=all_metrics
+                            )
+                        ),
+                    ], width=6),
+                    dbc.Col([
+                        dcc.Graph(
+                            id="animated-percentage-barchart-plot",
+                            figure=create_animated_bar_chart_percentage(
+                                all_metrics=all_metrics
+                            )
+                        ),
+                    ], width=6)
                 ],
                 style={"marginTop": "32px"}
             ),
@@ -48,74 +68,137 @@ def generate_dashboards(all_metrics, us_map_metrics, cities, airlines):
 
 #RADAR
 
-def generate_radar_dashboard(all_metrics):
-    categories = ["Avg_Departure_Delay", "Avg_Arrival_Delay", "Cancelled_Percentage", "Diverted_Percentage"]
-    fig = go.Figure()
+def create_radar_plots_numeric(all_metrics):
+    """
+    Génère deux radar plots distincts :
+    1. Un pour les catégories numériques (`avg_departure_delay`, `avg_arrival_delay`).
+    2. Un pour les catégories en pourcentage (`cancelled_percentage`, `diverted_percentage`, etc.).
+    """
+    numeric_metrics = all_metrics[all_metrics["Parameter"].isin(["Avg_Departure_Delay", "Avg_Arrival_Delay"])]
 
-    print("Cadeau: ", all_metrics)
-    fig = px.line_polar(
-        all_metrics,
-        r="Value",  # Rayon : les valeurs des paramètres
-        theta="Parameter",  # Angle : les catégories
-        color="Airline",  # Couleur pour chaque compagnie
-        line_close=True,  # Ferme les lignes du radar
-        animation_frame="Year",  # Animation basée sur l'année
-        title="Radar Plot displaying metrics of Companies per Years",
+    # Radar plot pour les métriques numériques
+    numeric_radar_fig = px.line_polar(
+        numeric_metrics,
+        r="Value",
+        theta="Parameter",
+        color="Airline",
+        line_close=True,
+        animation_frame="Year",
+        title="Radar Plot (Numeric Metrics)",
         template="plotly_dark"
     )
+    numeric_radar_fig.update_layout(
+        polar=dict(radialaxis=dict(visible=True)),
+        legend_title="Compagnies Aériennes"
+    )
 
-    # Mise en forme
-    fig.update_layout(
+    return numeric_radar_fig
+
+def create_radar_plots_percentage(all_metrics):
+    """
+    Génère deux radar plots distincts :
+    1. Un pour les catégories numériques (`avg_departure_delay`, `avg_arrival_delay`).
+    2. Un pour les catégories en pourcentage (`cancelled_percentage`, `diverted_percentage`, etc.).
+    """
+    percentage_metrics = all_metrics[~all_metrics["Parameter"].isin(["Avg_Departure_Delay", "Avg_Arrival_Delay"])]
+
+    # Radar plot pour les métriques en pourcentage
+    percentage_radar_fig = px.line_polar(
+        percentage_metrics,
+        r="Value",
+        theta="Parameter",
+        color="Airline",
+        line_close=True,
+        animation_frame="Year",
+        title="Radar Plot (Percentage Metrics)",
+        template="plotly_dark"
+    )
+    percentage_radar_fig.update_layout(
         polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
         legend_title="Compagnies Aériennes"
     )
 
-    return fig
+    return percentage_radar_fig
 
 
 #ANIMATED BARCHART
-def create_animated_bar_chart(all_metrics):
+def create_animated_bar_chart_numeric(all_metrics):
     """
-    Génère un bar chart animé avec des barres non empilées (côte à côte) 
-    et gère les duplications des données.
+    Génère deux bar charts animés distincts :
+    1. Un pour les catégories numériques (`avg_departure_delay`, `avg_arrival_delay`).
+    2. Un pour les catégories en pourcentage (`cancelled_percentage`, `diverted_percentage`, etc.).
     """
-    # Suppression des duplications
-    all_metrics = (
-        all_metrics.groupby(["Airline", "Year", "Parameter"], as_index=False)
-        .mean()  # Moyenne des valeurs si des duplications existent
+    # Séparer les catégories
+    numeric_metrics = all_metrics[all_metrics["Parameter"].isin(["Avg_Departure_Delay", "Avg_Arrival_Delay"])]
+
+    # Bar chart pour les métriques numériques
+    numeric_fig = px.bar(
+        numeric_metrics.groupby(["Airline", "Year", "Parameter"], as_index=False).mean(),
+        x="Parameter",
+        y="Value",
+        color="Airline",
+        animation_frame="Year",
+        title="Bar Chart (Numeric Metrics)",
+        template="plotly_white"
+    )
+    numeric_fig.update_layout(
+        xaxis_title="Paramètres",
+        yaxis_title="Valeur (en minutes)",
+        legend_title="Compagnies Aériennes",
+        xaxis_tickangle=-45,
+        bargap=0.4,
+        barmode="group",
+        margin=dict(l=50, r=50, t=50, b=50)
+    )
+    numeric_fig.update_traces(
+        texttemplate='%{y:.2f}',
+        textposition="outside",
+        opacity=0.9
     )
 
-    # Création de la figure
-    fig = px.bar(
-        all_metrics,
-        x="Parameter",  # Paramètres sur l'axe X
-        y="Value",  # Valeurs des métriques
-        color="Airline",  # Couleurs par compagnie aérienne
-        animation_frame="Year",  # Animation par année
-        title="Bar Chart displaying metrics of Companies per Years",
-        template="plotly_white"  # Style visuel clair
-    )
+    return numeric_fig
 
-    # Mise en forme des barres
-    fig.update_layout(
+
+def create_animated_bar_chart_percentage(all_metrics):
+    """
+    Génère deux bar charts animés distincts :
+    1. Un pour les catégories numériques (`avg_departure_delay`, `avg_arrival_delay`).
+    2. Un pour les catégories en pourcentage (`cancelled_percentage`, `diverted_percentage`, etc.).
+    """
+    # Séparer les catégories
+    percentage_metrics = all_metrics[~all_metrics["Parameter"].isin(["Avg_Departure_Delay", "Avg_Arrival_Delay"])]
+
+    # Bar chart pour les métriques en pourcentage
+    percentage_fig = px.bar(
+        percentage_metrics.groupby(["Airline", "Year", "Parameter"], as_index=False).mean(),
+        x="Parameter",
+        y="Value",
+        color="Airline",
+        animation_frame="Year",
+        title="Bar Chart (Percentage Metrics)",
+        template="plotly_white"
+    )
+    percentage_fig.update_layout(
         xaxis_title="Paramètres",
         yaxis_title="Pourcentage",
         legend_title="Compagnies Aériennes",
-        xaxis_tickangle=-45,  # Inclinaison des étiquettes des paramètres
-        bargap=0.4,  # Espacement entre les barres
-        barmode="group",  # Afficher les barres côte à côte
-        yaxis=dict(range=[0, 100]),  # Limites de l'axe Y entre 0 et 100
+        xaxis_tickangle=-45,
+        bargap=0.4,
+        barmode="group",
+        yaxis=dict(range=[0, 100]),
         margin=dict(l=50, r=50, t=50, b=50)
     )
-
-    # Ajouter les valeurs au-dessus des barres
-    fig.update_traces(
-        texttemplate='%{y:.2f}',  # Afficher les valeurs avec 2 décimales
-        textposition="outside",  # Positionner les valeurs au-dessus des barres
-        opacity=0.9  # Rendre les barres légèrement transparentes
+    percentage_fig.update_traces(
+        texttemplate='%{y:.2f}',
+        textposition="outside",
+        opacity=0.9
     )
 
-    return fig
+    return percentage_fig
+
+
+
+
 
 def generate_us_heatmap(us_map_df):
     """
