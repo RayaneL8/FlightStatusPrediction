@@ -75,8 +75,8 @@ def sql_query(query: str):
     print('Generated SQL query:', quer)
     result = queries.execute_raw_query(quer)
     is_valid = check_result(result)
-    return {"content": result["data"] if is_valid else None, "sql_query": quer, "valid": is_valid, "elapsed_time": result["elapsed_time"]}
-
+    res= {"content": result["data"] if is_valid else None, "sql_query": quer, "valid": is_valid, "elapsed_time": result["elapsed_time"]}
+    return res
 # "message": "No data to display :(, try a different request"
 
 @app.get("/cancelled-flights-percentage-year/{year}")

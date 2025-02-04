@@ -94,14 +94,6 @@ def content_template():
                                     ),
                                 ]
                             ),
-                            dbc.Col(
-                                [
-                                    html.Div(
-                                        "Year selected (only year will matter in your selection):",
-                                        style={"marginBottom": "12px"},
-                                    ),
-                                ]
-                            ),
                             dbc.Row(
                                 [
                                     html.Div(
