@@ -19,7 +19,7 @@ from models.Requests import ReqHistoried
 from controllers import natural_requests as Cnat_reqs
 from controllers import initiators as Cinitiators
 from controllers import preset_requests as Cpreset_requests
-from components import performance_dashboards
+from components import performance_dashboards, statistics_dashboard
 
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
@@ -295,17 +295,33 @@ def open_modal(n1, is_open):
 @app.callback(
     Output("container-dashboards", "children"),
     Input("button-submit-modal-parameters-selection", "n_clicks"),
+    Input("button-performance", "n_clicks"),
+    Input("button-statistics", "n_clicks"),
+    Input("button-quality", "n_clicks"),
     State("dropdown-cities", "value"),
     State("dropdown-airlines", "value"),
     State("datepicker", "date"),
     prevent_initial_call=True
 )
-def generate_dashboards(n_clicks, cities, airlines, year):
-    date_str = year
-    year = int(datetime.strptime(date_str, "%Y-%m-%d").year)
-    all_metrics, us_map_metrics = Cpreset_requests.get_performance(cities=cities, airlines=airlines, years=[2018,2019,2020,2021,2022])
-    print("all_metrics: ", all_metrics)
-    return performance_dashboards.generate_dashboards(all_metrics=all_metrics, us_map_metrics=us_map_metrics, cities=cities, airlines=airlines)
+def generate_dashboards(n_clicks_submit, n_clicks_perf, n_clicks_stat, n_clicks_qual, cities, airlines, year):
+    triggered_id = ctx.triggered_id  # ctx permet de savoir quel élément a déclenché la callback
+    
+    if triggered_id == "button-statistics":
+        data = Cpreset_requests.get_statistics(cities=cities, airlines=airlines, years=[2018,2019,2020,2021,2022])
+        return statistics_dashboard.generate_dashboards(data=data)
+
+    elif triggered_id == "button-performance":
+        date_str = year
+        year = int(datetime.strptime(date_str, "%Y-%m-%d").year)
+        all_metrics, us_map_metrics = Cpreset_requests.get_performance(cities=cities, airlines=airlines, years=[2018,2019,2020,2021,2022])
+        print("all_metrics: ", all_metrics)
+        return performance_dashboards.generate_dashboards(all_metrics=all_metrics, us_map_metrics=us_map_metrics, cities=cities, airlines=airlines)
+
+    # Optionnel : Gérer d'autres cas (ex: qualité)
+    elif triggered_id == "button-quality":
+        return "Fonctionalité qualité en cours de développement"
+
+    return "Aucun bouton pertinent cliqué"
 
 @app.callback(
     Output("offcanvas-history", "is_open"),

@@ -845,4 +845,4 @@ def execute_raw_query(query):
         # Retourner le résultat et le temps écoulé
         return {"data": result, "elapsed_time": elapsed_time}
     except Exception as e:
-        return {"data": None, "error": str(e), "elapsed_time": elapsed_time}
+        return {"data": None, "error": str(e), "elapsed_time": 1}

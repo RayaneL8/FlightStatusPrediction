@@ -173,3 +173,38 @@ def fetch_performance_metrics(year, cities, airlines):
     return aggregated_metrics
 
 
+#STATISTICS
+
+def get_statistics(years: list[int], cities: list[str], airlines: list[str]):
+    """
+    Récupère et organise les données de qualité par années, villes et compagnies aériennes.
+    """
+    # Récupération brute des données via l'API
+    raw_data = Spreset_requests.get_statistics_multi(years=years, cities=cities, airlines=airlines)
+    if not raw_data:
+        print("Aucune donnée récupérée.")
+        return {}
+
+    return raw_data
+
+def prepare_calendar_data(calendar_data, category):
+    """ Transforme les données JSON en DataFrame pour Plotly. """
+    df = pd.DataFrame(calendar_data)
+    df["Date"] = pd.to_datetime(df["Year"].astype(str) + "-" + df["Month"].astype(str) + "-01")
+
+    # Trouver la bonne colonne de pourcentage
+    possible_columns = [f"{category}Percentage", "Percentage"]
+    for col in possible_columns:
+        if col in df.columns:
+            df = df.rename(columns={col: "Percentage"})
+            break
+    else:
+        raise KeyError(f"Aucune colonne de pourcentage trouvée pour {category} dans {df.columns}")
+
+    # S'assurer que Percentage est bien numérique
+    df["Percentage"] = pd.to_numeric(df["Percentage"], errors="coerce").fillna(0)
+
+    # Ajouter une colonne "Month_Name" pour un affichage correct
+    df["Month_Name"] = df["Date"].dt.strftime("%b")  # Ex: "Jan", "Feb", ...
+
+    return df[["Date", "Year", "Month_Name", "Percentage"]]

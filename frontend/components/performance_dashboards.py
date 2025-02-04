@@ -117,48 +117,6 @@ def create_animated_bar_chart(all_metrics):
 
     return fig
 
-# def generate_us_heatmap(us_map_df):
-#     """
-#     Génère une carte heatmap des États-Unis pour visualiser les retards moyens au départ et les annulations.
-#     """
-#     if us_map_df.empty or "Latitude" not in us_map_df.columns or "Longitude" not in us_map_df.columns:
-#         print("Le DataFrame est vide ou manque de coordonnées géographiques.")
-#         return None
-
-#     # Création de la carte avec les coordonnées GPS
-#     fig = px.scatter_geo(
-#         us_map_df,
-#         lat="Latitude",
-#         lon="Longitude",
-#         hover_name="City",
-#         hover_data={
-#             "State": True,
-#             "Avg_Departure_Delay": ":.2f",
-#             "Total_Cancellations": True
-#         },
-#         size="Total_Cancellations",
-#         color="Avg_Departure_Delay",
-#         color_continuous_scale=px.colors.sequential.Viridis,
-#         title="Heatmap des Retards Moyens et Annulations par Ville"
-#     )
-
-#     # Ajustements esthétiques
-#     fig.update_layout(
-#         geo=dict(
-#             scope="usa",
-#             showland=True,
-#             landcolor="rgb(217, 217, 217)",
-#             subunitcolor="rgb(255, 255, 255)",
-#             countrycolor="rgb(255, 255, 255)"
-#         ),
-#         coloraxis_colorbar=dict(
-#             title="Retard Moyen",
-#             ticks="outside"
-#         )
-#     )
-
-#     return fig
-
 def generate_us_heatmap(us_map_df):
     """
     Génère une carte interactive avec une combinaison des retards moyens et des annulations.
@@ -195,7 +153,6 @@ def generate_us_heatmap(us_map_df):
     )
 
     return fig
-
 
 
 

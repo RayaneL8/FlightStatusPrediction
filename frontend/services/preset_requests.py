@@ -47,3 +47,27 @@ def get_performance_multi(years: list[int], cities: list[str], airlines: list[st
     except requests.RequestException as e:
         print(f"Erreur lors de la requête : {e}")
         return None
+    
+
+
+
+#STATISTICS
+
+def get_statistics_multi(years: list[int], cities: list[str], airlines: list[str]):
+    """
+    Effectue une requête GET pour récupérer les données qualité (retards, détournements, annulations).
+    """
+    try:
+        url = "http://localhost:8000/statistics"  # Endpoint de l'API
+        params = {
+            "year": years,
+            "city": cities,
+            "airline": airlines,
+        }
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        return response.json()  # Retour des données JSON
+    except requests.RequestException as e:
+        print(f"Erreur lors de la requête : {e}")
+        return None
+    
