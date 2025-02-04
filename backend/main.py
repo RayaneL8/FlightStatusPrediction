@@ -83,6 +83,8 @@ def sql_query(query: str):
     res= {"content": result["data"] , "sql_query": quer, "valid": True, "elapsed_time": result["elapsed_time"]} 
     return res
 
+
+
 # "message": "No data to display :(, try a different request"
 
 @app.get("/cancelled-flights-percentage-year/{year}")
