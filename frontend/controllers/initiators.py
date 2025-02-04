@@ -1,10 +1,11 @@
+import json
 from services import initiators as Sinitiators
 
 def get_cities():
-    airlines = []
+    cities = []
     try:
         cities = Sinitiators.get_cities()  # Assuming this returns the provided data
-        print("Raw cities data:", airlines)
+        print("Raw cities data:", cities)
     except Exception as e:
         print(f"Error fetching cities: {e}")
         return []

@@ -263,17 +263,12 @@ def toggle_display_data(n_open, n_close, is_open, data):
     from controllers.natural_requests import find_item, format_item_data
     # Trouver quel bouton a été cliqué
     triggered_index = ctx.triggered_id["index"]
-    print(find_item(triggered_index)['result'])
+    #print(find_item(triggered_index)['result'])
     return [
         dbc.ModalHeader(dbc.ModalTitle("Display RAW Data of Request")),
         #dbc.ModalBody(format_item_data(item=find_item(triggered_index))),
         #dbc.ModalBody(natural_requests_dashboard.create_heatmap_from_list(data_list=find_item(triggered_index)['result'])),
-        dbc.ModalBody(dcc.Graph
-                        (
-                            id="heatmap-plot",
-                            figure=natural_requests_dashboard.create_heatmap_from_list(data_list=find_item(triggered_index)['result'])
-                        ),
-        ),
+        dbc.ModalBody(natural_requests_dashboard.generate_dashboards(data=find_item(triggered_index)['result'])),
         dbc.ModalFooter(
             dbc.Button(
                 "Close", id="button-close-modal-display-raw-data", className="ms-auto", n_clicks=0
