@@ -208,3 +208,57 @@ def prepare_calendar_data(calendar_data, category):
     df["Month_Name"] = df["Date"].dt.strftime("%b")  # Ex: "Jan", "Feb", ...
 
     return df[["Date", "Year", "Month_Name", "Percentage"]]
+
+
+#QUALITY
+
+def get_quality(years: list[int], cities: list[str], airlines: list[str]):
+    """
+    Récupère et organise les données de performances par années, villes et compagnies aériennes.
+    """
+    # Récupération brute des données via l'API
+    raw_data = Spreset_requests.get_quality_multi(years=years, cities=cities, airlines=airlines)
+    if not raw_data:
+        print("Aucune donnée récupérée.")
+        return {}
+
+    # Organisation des données
+    organized_metrics = transform_quality_data(raw_data)
+    return organized_metrics
+
+def transform_quality_data(data):
+    """
+    Transforme les données statistiques en un DataFrame structuré pour les graphiques.
+    """
+    all_data = []
+    categories = {
+        "avg_taxi_out": "Avg_TaxiOut_Time",
+        "avg_taxi_in": "Avg_TaxiIn_Time",
+        "flights_delayed_15_plus": "Flights_Delayed_15_Plus",
+        "flights_delayed_less_15": "Flights_Delayed_Less_15",
+        "cancelled_flights": "Cancelled_Flights",
+        "diverted_flights": "Diverted_Flights"
+    }
+
+    for key, value in categories.items():
+        if key in data:
+            for entry in data[key]:
+                airline = entry.get("Airline", "Unknown")
+                year = entry.get("Year", "Unknown")
+
+                # Récupérer la valeur
+                metric_value = entry.get(value, 0)
+
+                all_data.append({
+                    "Airline": airline,
+                    "Year": year,
+                    "Parameter": key.replace("_", " ").title().replace(" ", "_"),
+                    "Value": metric_value,
+                })
+
+    df = pd.DataFrame(all_data)
+
+    # Normaliser les valeurs pour un affichage correct (échelle de 0 à 100)
+    df["Value"] = df.groupby("Parameter")["Value"].transform(lambda x: (x / x.max()) * 100)
+
+    return df

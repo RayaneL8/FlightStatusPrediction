@@ -19,7 +19,7 @@ from models.Requests import ReqHistoried
 from controllers import natural_requests as Cnat_reqs
 from controllers import initiators as Cinitiators
 from controllers import preset_requests as Cpreset_requests
-from components import performance_dashboards, statistics_dashboard
+from components import performance_dashboards, statistics_dashboard, quality_dashboard
 
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
@@ -100,15 +100,15 @@ def content_template():
                                         "Year selected (only year will matter in your selection):",
                                         style={"marginBottom": "12px"},
                                     ),
-                                    dcc.DatePickerSingle(
-                                        id="datepicker",
-                                        month_format='MMM Do, YY',
-                                        placeholder='MMM Do, YY',
-                                        date=date(2018, 1, 1),
-                                        min_date_allowed=date(2018, 1, 1),
-                                        max_date_allowed=date(2022, 12, 31),
-                                        style={"marginBottom": "16px", "marginTop": "8px"}
-                                    ),
+                                    # dcc.DatePickerSingle(
+                                    #     id="datepicker",
+                                    #     month_format='MMM Do, YY',
+                                    #     placeholder='MMM Do, YY',
+                                    #     date=date(2018, 1, 1),
+                                    #     min_date_allowed=date(2018, 1, 1),
+                                    #     max_date_allowed=date(2022, 12, 31),
+                                    #     style={"marginBottom": "16px", "marginTop": "8px"}
+                                    # ),
                                 ]
                             ),
                             dbc.Row(
@@ -300,10 +300,10 @@ def open_modal(n1, is_open):
     Input("button-quality", "n_clicks"),
     State("dropdown-cities", "value"),
     State("dropdown-airlines", "value"),
-    State("datepicker", "date"),
+    #State("datepicker", "date"),
     prevent_initial_call=True
 )
-def generate_dashboards(n_clicks_submit, n_clicks_perf, n_clicks_stat, n_clicks_qual, cities, airlines, year):
+def generate_dashboards(n_clicks_submit, n_clicks_perf, n_clicks_stat, n_clicks_qual, cities, airlines):       #year=2020
     triggered_id = ctx.triggered_id  # ctx permet de savoir quel élément a déclenché la callback
     
     if triggered_id == "button-statistics":
@@ -311,15 +311,16 @@ def generate_dashboards(n_clicks_submit, n_clicks_perf, n_clicks_stat, n_clicks_
         return statistics_dashboard.generate_dashboards(data=data)
 
     elif triggered_id == "button-performance":
-        date_str = year
-        year = int(datetime.strptime(date_str, "%Y-%m-%d").year)
+        # date_str = year
+        # year = int(datetime.strptime(date_str, "%Y-%m-%d").year)
         all_metrics, us_map_metrics = Cpreset_requests.get_performance(cities=cities, airlines=airlines, years=[2018,2019,2020,2021,2022])
-        print("all_metrics: ", all_metrics)
+        # print("all_metrics: ", all_metrics)
         return performance_dashboards.generate_dashboards(all_metrics=all_metrics, us_map_metrics=us_map_metrics, cities=cities, airlines=airlines)
 
     # Optionnel : Gérer d'autres cas (ex: qualité)
     elif triggered_id == "button-quality":
-        return "Fonctionalité qualité en cours de développement"
+        data = Cpreset_requests.get_quality(cities=cities, airlines=airlines, years=[2018,2019,2020,2021,2022])
+        return quality_dashboard.generate_dashboards(data=data)
 
     return "Aucun bouton pertinent cliqué"
 

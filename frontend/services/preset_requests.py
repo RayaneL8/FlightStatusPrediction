@@ -71,3 +71,22 @@ def get_statistics_multi(years: list[int], cities: list[str], airlines: list[str
         print(f"Erreur lors de la requête : {e}")
         return None
     
+#QUALITY
+
+def get_quality_multi(years: list[int], cities: list[str], airlines: list[str]):
+    """
+    Effectue une requête GET pour récupérer les données de statistiques sur plusieurs années, villes et compagnies aériennes.
+    """
+    try:
+        url = "http://localhost:8000/quality"  # URL de l'API
+        params = {
+            "year": years,
+            "city": cities,
+            "airline": airlines,
+        }
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        return response.json()  # Retourne les données JSON
+    except requests.RequestException as e:
+        print(f"Erreur lors de la requête : {e}")
+        return None
