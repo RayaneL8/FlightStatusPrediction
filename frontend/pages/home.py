@@ -19,7 +19,7 @@ from models.Requests import ReqHistoried
 from controllers import natural_requests as Cnat_reqs
 from controllers import initiators as Cinitiators
 from controllers import preset_requests as Cpreset_requests
-from components import performance_dashboards, statistics_dashboard, quality_dashboard
+from components import performance_dashboards, statistics_dashboard, quality_dashboard, natural_requests_dashboard
 
 import dash_mantine_components as dmc
 from dash_iconify import DashIconify
@@ -168,6 +168,7 @@ def content_template():
                 children=[dbc.Button("Close", id="button-close-modal-display-raw-data", className="ms-auto", n_clicks=0)],
                 id="modal-display-raw-data",
                 is_open=False,
+                size="lg"
             ),
             dbc.Row(
                 children=[
@@ -271,9 +272,17 @@ def toggle_display_data(n_open, n_close, is_open, data):
     from controllers.natural_requests import find_item, format_item_data
     # Trouver quel bouton a été cliqué
     triggered_index = ctx.triggered_id["index"]
+    print(find_item(triggered_index)['result'])
     return [
         dbc.ModalHeader(dbc.ModalTitle("Display RAW Data of Request")),
-        dbc.ModalBody(format_item_data(item=find_item(triggered_index))),
+        #dbc.ModalBody(format_item_data(item=find_item(triggered_index))),
+        #dbc.ModalBody(natural_requests_dashboard.create_heatmap_from_list(data_list=find_item(triggered_index)['result'])),
+        dbc.ModalBody(dcc.Graph
+                        (
+                            id="heatmap-plot",
+                            figure=natural_requests_dashboard.create_heatmap_from_list(data_list=find_item(triggered_index)['result'])
+                        ),
+        ),
         dbc.ModalFooter(
             dbc.Button(
                 "Close", id="button-close-modal-display-raw-data", className="ms-auto", n_clicks=0
