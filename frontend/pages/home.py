@@ -100,15 +100,6 @@ def content_template():
                                         "Year selected (only year will matter in your selection):",
                                         style={"marginBottom": "12px"},
                                     ),
-                                    # dcc.DatePickerSingle(
-                                    #     id="datepicker",
-                                    #     month_format='MMM Do, YY',
-                                    #     placeholder='MMM Do, YY',
-                                    #     date=date(2018, 1, 1),
-                                    #     min_date_allowed=date(2018, 1, 1),
-                                    #     max_date_allowed=date(2022, 12, 31),
-                                    #     style={"marginBottom": "16px", "marginTop": "8px"}
-                                    # ),
                                 ]
                             ),
                             dbc.Row(
