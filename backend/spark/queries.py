@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 import seaborn as sns
 import matplotlib.pyplot as plt
 import time
+import pandas as pd
 
 # Fonction pour obtenir une session Spark
 def get_spark_session(app_name="FastAPI_Spark_App"):
@@ -827,22 +828,18 @@ def cancelled_flights(year=None, city=None, airline=None):
         return spark.sql(query).toPandas().to_dict(orient="records")
     except Exception as e:
         return {"error": str(e)}
-
+    
 def execute_raw_query(query):
     try:
-        # Mesurer le temps avant l'exécution
         start_time = time.time()
-        
-        # Exécuter la requête et convertir en pandas DataFrame
         result = spark.sql(query).toPandas().to_dict(orient="records")
         
-        # Mesurer le temps après l'exécution
+        # Remplacer les NaN par None ou 0
+        result = [{k: (None if isinstance(v, float) and pd.isna(v) else v) for k, v in record.items()} for record in result]
+        
+        print(result[:5])
         end_time = time.time()
-        
-        # Calculer le temps écoulé
         elapsed_time = end_time - start_time
-        
-        # Retourner le résultat et le temps écoulé
         return {"data": result, "elapsed_time": elapsed_time}
     except Exception as e:
         return {"data": None, "error": str(e), "elapsed_time": 1}

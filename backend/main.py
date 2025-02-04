@@ -73,9 +73,15 @@ def sql_query(query: str):
     p = parser.SQLParser()
     quer = p.parse_to_sql(query)
     print('Generated SQL query:', quer)
+    print('ici')
     result = queries.execute_raw_query(quer)
-    is_valid = check_result(result)
-    return {"content": result["data"] if is_valid else None, "sql_query": quer, "valid": is_valid, "elapsed_time": result["elapsed_time"]}
+    print('ici')
+    data = result["data"] 
+    if not data or len(data) == 0:
+        return {"content": None , "sql_query": quer, "valid": False, "elapsed_time": result["elapsed_time"]} 
+
+    res= {"content": result["data"] , "sql_query": quer, "valid": True, "elapsed_time": result["elapsed_time"]} 
+    return res
 
 # "message": "No data to display :(, try a different request"
 
